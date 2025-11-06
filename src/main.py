@@ -11,6 +11,7 @@ from llm.azure import AzureClient
 from llm.aws import AWSClient
 
 from processor import process_input_path
+from prompt import BASE_PROMPT
 
 def parse_args(input_args=None):
     parser = argparse.ArgumentParser(description="Process PPT/PPTX files via vLLM.")
@@ -69,8 +70,8 @@ def parse_args(input_args=None):
     parser.add_argument(
         "--prompt_path",
         type=str,
-        default="src/prompt.txt",
-        help="Path to the base prompt file (default: src/prompt.txt)"
+        default=None,
+        help="Optional path to a custom prompt file. If not provided, uses the default prompt from src/prompt.py"
     )
     parser.add_argument(
         "--api_key",
@@ -171,12 +172,16 @@ def main():
     logger = logging.getLogger(__name__)
 
     # ---- 3) Read prompt once ----
-    base_prompt_file = Path(args.prompt_path)
-    if not base_prompt_file.is_file():
-        logger.error(f"Prompt file not found at {base_prompt_file}")
-        sys.exit(1)
-
-    base_prompt = base_prompt_file.read_text(encoding="utf-8").strip()
+    if args.prompt_path:
+        # Use custom prompt file if provided
+        base_prompt_file = Path(args.prompt_path)
+        if not base_prompt_file.is_file():
+            logger.error(f"Prompt file not found at {base_prompt_file}")
+            sys.exit(1)
+        base_prompt = base_prompt_file.read_text(encoding="utf-8").strip()
+    else:
+        # Use default prompt from Python module
+        base_prompt = BASE_PROMPT
     if args.instructions and args.instructions.lower() != "none provided":
         prompt = f"{base_prompt}\n\nAdditional instructions:\n{args.instructions}"
     else:

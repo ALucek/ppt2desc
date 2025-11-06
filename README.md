@@ -221,7 +221,7 @@ You should use either `--libreoffice_url` or `--libreoffice_path` but not both.
 
 ### Custom Prompts
 
-You can modify the base prompt by editing `src/prompt.txt` or providing additional instructions via the command line:
+You can modify the base prompt by editing `src/prompt.py` (specifically the `BASE_PROMPT` constant) or providing additional instructions via the command line:
 
 ```bash
 uv run src/main.py \

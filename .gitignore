@@ -4,3 +4,4 @@ test_files
 __pycache__/
 .DS_Store
 ppts/
+.venv/

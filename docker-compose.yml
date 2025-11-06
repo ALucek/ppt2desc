@@ -9,6 +9,6 @@ services:
     # Healthcheck
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:2002/health"]
-      interval: 30s
+      interval: 300s
       timeout: 10s
       retries: 3

@@ -27,7 +27,8 @@ ppt2desc is a command-line tool that converts PowerPoint presentations into deta
 
 ## Prerequisites
 
-- Python 3.9 or higher
+- Python 3.13 or higher
+- [UV](https://github.com/astral-sh/uv) package manager (install from [uv.pm](https://github.com/astral-sh/uv#installation))
 - LibreOffice (for PPT/PPTX to PDF conversion)
   - Option 1: Install LibreOffice locally.
   - Option 2: Use the provided Docker container for LibreOffice.
@@ -70,22 +71,18 @@ docker compose up -d
 
 This command will build the Docker image based on the provided [Dockerfile](./src/libreoffice_docker/) and start the container in detached mode. The LibreOffice conversion service will be accessible at`http://localhost:2002`. Take down with `docker compose down`.
 
-3. Create and activate a virtual environment:
+3. Install dependencies using UV:
 ```bash
-python -m venv ppt2desc_venv
-source ppt2desc_venv/bin/activate  # On Windows: ppt2desc_venv\Scripts\activate
+uv sync
 ```
 
-4. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+This will create a virtual environment and install all dependencies from `pyproject.toml`.
 
 ## Usage
 
 Basic usage with Gemini API:
 ```bash
-python src/main.py \
+uv run src/main.py \
     --input_dir /path/to/presentations \
     --output_dir /path/to/output \
     --libreoffice_path /path/to/soffice \
@@ -129,7 +126,7 @@ AWS Amazon Bedrock Specific Arguments:
 
 Using Gemini API:
 ```bash
-python src/main.py \
+uv run src/main.py \
     --input_dir ./presentations \
     --output_dir ./output \
     --libreoffice_path ./soffice \
@@ -141,7 +138,7 @@ python src/main.py \
 
 Using Vertex AI:
 ```bash
-python src/main.py \
+uv run src/main.py \
     --input_dir ./presentations \
     --output_dir ./output \
     --client vertexai \
@@ -154,7 +151,7 @@ python src/main.py \
 ```
 Using Azure AI Foundry:
 ```bash
-python src/main.py \
+uv run src/main.py \
     --input_dir ./presentations \
     --output_dir ./output \
     --libreoffice_path ./soffice \
@@ -168,7 +165,7 @@ python src/main.py \
 
 Using AWS Amazon Bedrock:
 ```bash
-python src/main.py \
+uv run src/main.py \
     --input_dir ./presentations \
     --output_dir ./output \
     --libreoffice_path ./soffice \
@@ -205,7 +202,7 @@ The tool generates JSON files with the following structure:
 When using the Docker container for LibreOffice, you can use the `--libreoffice_url` argument to direct the conversion process to the container's API endpoint, rather than a local installation.
 
 ```bash
-python src/main.py \
+uv run src/main.py \
     --input_dir ./presentations \
     --output_dir ./output \
     --libreoffice_url http://localhost:2002 \
@@ -227,7 +224,7 @@ You should use either `--libreoffice_url` or `--libreoffice_path` but not both.
 You can modify the base prompt by editing `src/prompt.txt` or providing additional instructions via the command line:
 
 ```bash
-python src/main.py \
+uv run src/main.py \
     --input_dir ./presentations \
     --output_dir ./output \
     --libreoffice_path ./soffice \

@@ -3,6 +3,7 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
+# Install LibreOffice and fonts
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libreoffice \
     fonts-dejavu \
@@ -11,23 +12,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-noto-color-emoji \
     curl \
     fontconfig \
+    && fc-cache -f -v \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN fc-cache -f -v
-
-RUN useradd --create-home libreoffice
-
 WORKDIR /app
 
+# Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy application
 COPY app.py .
-
-RUN chown -R libreoffice:libreoffice /app
-
-USER libreoffice
 
 EXPOSE 2002
 

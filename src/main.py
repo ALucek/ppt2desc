@@ -61,6 +61,12 @@ def parse_args(input_args=None):
         help="Number of API calls allowed per minute (default: 60)"
     )
     parser.add_argument(
+        "--max_workers",
+        type=int,
+        default=None,
+        help="Maximum number of concurrent workers for processing slides. Defaults to rate_limit if set, otherwise 10."
+    )
+    parser.add_argument(
         "--prompt_path",
         type=str,
         default="src/prompt.txt",
@@ -275,7 +281,8 @@ def main():
         rate_limit=args.rate_limit,
         prompt=prompt,
         save_pdf=args.save_pdf,
-        save_images=args.save_images
+        save_images=args.save_images,
+        max_workers=args.max_workers
     )
 
     # ---- 6) Log Summary ----

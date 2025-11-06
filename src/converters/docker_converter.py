@@ -24,17 +24,18 @@ def convert_pptx_via_docker(
     endpoint = f"{container_url.rstrip('/')}/convert/ppt-to-pdf"
     logger.info(f"Calling Docker LibreOffice at {endpoint} for {ppt_file}")
 
-    # 1) Prepare the file for upload
-    files = {
-        "file": (ppt_file.name, ppt_file.open("rb"), "application/vnd.ms-powerpoint")
-    }
-
     try:
-        # 2) Make a POST request
-        resp = requests.post(endpoint, files=files, timeout=300)
-        resp.raise_for_status()
+        # 1) Prepare the file for upload (using context manager to ensure file is closed)
+        with ppt_file.open("rb") as file_handle:
+            files = {
+                "file": (ppt_file.name, file_handle, "application/vnd.ms-powerpoint")
+            }
 
-        # 3) Save the returned PDF to temp_dir
+            # 2) Make a POST request (file will be closed automatically after request completes)
+            resp = requests.post(endpoint, files=files, timeout=300)
+            resp.raise_for_status()
+
+        # 3) Save the returned PDF to temp_dir (file handle is now closed)
         pdf_filename = ppt_file.stem + ".pdf"
         pdf_path = temp_dir / pdf_filename
         with open(pdf_path, "wb") as f:

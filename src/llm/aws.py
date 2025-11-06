@@ -67,12 +67,12 @@ class AWSClient:
         # For JSON metadata
         self.model_name = model
 
-    def _encode_image(self, image_path: Union[str, Path]) -> str:
+    def _encode_image(self, image_path: Union[str, Path]) -> bytes:
         """
-        Encode an image file to base64 string.
+        Read image file as raw bytes.
 
         :param image_path: Path to the image file
-        :return: Base64 encoded string of the image
+        :return: Raw bytes of the image (AWS Bedrock expects bytes, not base64)
         """
         with open(image_path, "rb") as image_file:
             return image_file.read()
@@ -93,8 +93,18 @@ class AWSClient:
             raise FileNotFoundError(f"Image file not found at {image_path_obj}")
 
         try:
-            # Encode the image to base64
-            base64_image = self._encode_image(image_path_obj)
+            # Read image as raw bytes
+            image_bytes = self._encode_image(image_path_obj)
+
+            # Determine image format from file extension (default to PNG as pipeline creates PNGs)
+            image_ext = image_path_obj.suffix.lower()
+            if image_ext == '.jpg' or image_ext == '.jpeg':
+                image_format = 'jpeg'
+            elif image_ext == '.png':
+                image_format = 'png'
+            else:
+                # Default to PNG as the pipeline creates PNGs
+                image_format = 'png'
 
             # Create the messages list
             messages = [
@@ -106,9 +116,9 @@ class AWSClient:
                         },
                         {
                             "image": {
-                                "format": "png",
+                                "format": image_format,
                                 "source": {
-                                    "bytes": base64_image
+                                    "bytes": image_bytes
                                 }
                             }
                         }
@@ -122,7 +132,36 @@ class AWSClient:
                 messages=messages
             )
 
-            return response["output"]["message"]["content"][0]["text"]
+            # Safely extract text content from response
+            # Structure: response["output"]["message"]["content"][0]["text"]
+            try:
+                output = response.get("output")
+                if output is None:
+                    raise Exception("AWS Bedrock API returned no output")
+                
+                message = output.get("message")
+                if message is None:
+                    raise Exception("AWS Bedrock API returned no message in output")
+                
+                content = message.get("content")
+                if content is None or not isinstance(content, list) or len(content) == 0:
+                    raise Exception("AWS Bedrock API returned no content in message")
+                
+                first_content = content[0]
+                if isinstance(first_content, dict):
+                    text = first_content.get("text")
+                    if text:
+                        return text
+                    raise Exception("No text found in AWS Bedrock response content")
+                elif hasattr(first_content, "text"):
+                    return first_content.text
+                else:
+                    raise Exception(f"Unexpected content structure in AWS Bedrock response: {type(first_content)}")
+                    
+            except KeyError as e:
+                raise Exception(f"Missing expected key in AWS Bedrock response: {e}")
+            except (IndexError, TypeError) as e:
+                raise Exception(f"Unexpected AWS Bedrock response structure: {e}")
 
         except Exception as e:
             raise Exception(f"Failed to generate content with AWS model: {e}")

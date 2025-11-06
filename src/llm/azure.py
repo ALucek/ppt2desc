@@ -95,6 +95,16 @@ class AzureClient:
             # Encode the image to base64
             base64_image = self._encode_image(image_path_obj)
 
+            # Determine image mime type from file extension (default to PNG as pipeline creates PNGs)
+            image_ext = image_path_obj.suffix.lower()
+            if image_ext == '.jpg' or image_ext == '.jpeg':
+                mime_type = 'image/jpeg'
+            elif image_ext == '.png':
+                mime_type = 'image/png'
+            else:
+                # Default to PNG as the pipeline creates PNGs
+                mime_type = 'image/png'
+
             # Create the API request
             response = self.client.chat.completions.create(
                 model=self.deployment,
@@ -109,7 +119,7 @@ class AzureClient:
                             {
                                 "type": "image_url",
                                 "image_url": {
-                                    "url": f"data:image/jpeg;base64,{base64_image}"
+                                    "url": f"data:{mime_type};base64,{base64_image}"
                                 },
                             },
                         ],
@@ -117,7 +127,38 @@ class AzureClient:
                 ],
             )
 
-            return response.choices[0].message.content
+            # Safely extract text content from response
+            # Handle different response structures that may occur
+            message_content = response.choices[0].message.content
+            
+            if message_content is None:
+                raise Exception("Azure OpenAI API returned empty content")
+            
+            # If content is a string, return it directly (most common case)
+            if isinstance(message_content, str):
+                return message_content
+            
+            # If content is a list (multimodal response), extract text from first element
+            if isinstance(message_content, list) and len(message_content) > 0:
+                first_block = message_content[0]
+                # Handle object-based blocks (has .text attribute)
+                if hasattr(first_block, 'text'):
+                    return first_block.text
+                # Handle dict-based blocks (if API returns dicts)
+                elif isinstance(first_block, dict):
+                    text = first_block.get('text')
+                    if text:
+                        return text
+                # Try to find any text block in the list
+                for block in message_content:
+                    if hasattr(block, 'text'):
+                        return block.text
+                    elif isinstance(block, dict) and block.get('text'):
+                        return block.get('text')
+                raise Exception("No text content found in multimodal response list")
+            
+            # Fallback: try to convert to string
+            return str(message_content)
 
         except Exception as e:
             raise Exception(f"Failed to generate content with Azure OpenAI model: {e}")

@@ -1,6 +1,7 @@
 import logging
 import argparse
 import sys
+import shutil
 from pathlib import Path
 
 from llm.google_unified import GoogleUnifiedClient
@@ -228,12 +229,6 @@ def main():
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    if args.libreoffice_path:
-        libreoffice_path = Path(args.libreoffice_path)
-    else:
-        # If no path is provided, assume 'libreoffice' is in PATH
-        libreoffice_path = Path("libreoffice")
-
     # ---- 5) Identify local vs. container-based conversion ----
     if args.libreoffice_url:
         logger.info(f"Using Docker-based LibreOffice at: {args.libreoffice_url}")
@@ -241,16 +236,34 @@ def main():
         # We'll pass this URL into the processor so it knows to do remote conversion
         libreoffice_path = None
     else:
-        # If no URL is provided, assume local path
+        # If no URL is provided, use local LibreOffice
         if args.libreoffice_path:
             libreoffice_path = Path(args.libreoffice_path)
+            if not libreoffice_path.exists():
+                logger.error(f"LibreOffice not found at specified path: {libreoffice_path}")
+                sys.exit(1)
+            if not libreoffice_path.is_file():
+                logger.error(f"LibreOffice path is not a file: {libreoffice_path}")
+                sys.exit(1)
         else:
-            libreoffice_path = Path("libreoffice")
+            # Try to find LibreOffice in PATH
+            # Check for 'soffice' first (the actual executable), then 'libreoffice' (common alias)
+            libreoffice_binary = shutil.which("soffice") or shutil.which("libreoffice")
+            if libreoffice_binary:
+                libreoffice_path = Path(libreoffice_binary)
+                if not libreoffice_path.exists():
+                    logger.error(f"LibreOffice binary resolved but does not exist: {libreoffice_path}")
+                    sys.exit(1)
+                logger.info(f"Found LibreOffice in PATH: {libreoffice_path}")
+            else:
+                logger.error(
+                    "LibreOffice not found. Please either:\n"
+                    "  1) Install LibreOffice and ensure 'soffice' or 'libreoffice' is in your PATH, or\n"
+                    "  2) Provide the path via --libreoffice_path, or\n"
+                    "  3) Use Docker-based conversion via --libreoffice_url"
+                )
+                sys.exit(1)
         libreoffice_endpoint = None
-
-    input_path = Path(args.input_dir)
-    output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
 
     # ---- 6) Process input path ----
     results = process_input_path(

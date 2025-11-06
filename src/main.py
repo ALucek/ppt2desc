@@ -19,14 +19,12 @@ def parse_args(input_args=None):
     parser.add_argument(
         "--output_dir",
         type=str,
-        default=None,
         required=True,
         help="Output directory path"
     )
     parser.add_argument(
         "--input_dir",
         type=str,
-        default=None,
         required=True,
         help="Path to input directory or PPT file"
     )
@@ -59,7 +57,8 @@ def parse_args(input_args=None):
         "--rate_limit",
         type=int,
         default=60,
-        help="Number of API calls allowed per minute (default: 60)"
+        help="Number of API calls allowed per minute (default: 60)",
+        metavar="RATE"
     )
     parser.add_argument(
         "--max_workers",
@@ -156,8 +155,65 @@ def parse_args(input_args=None):
         help="If provided, uses the Docker container's endpoint (e.g., http://localhost:2002) for PPT->PDF conversion."
     )
 
-    args = parser.parse_args(input_args) if input_args else parser.parse_args()
+    args = parser.parse_args(input_args)
     return args
+
+def validate_args(args, logger):
+    """
+    Validate arguments based on client type and other constraints.
+    """
+    # Validate rate_limit
+    if args.rate_limit <= 0:
+        logger.error(f"rate_limit must be positive, got: {args.rate_limit}")
+        sys.exit(1)
+    
+    # Validate max_workers if provided
+    if args.max_workers is not None and args.max_workers <= 0:
+        logger.error(f"max_workers must be positive, got: {args.max_workers}")
+        sys.exit(1)
+    
+    # Validate client-specific required arguments
+    if args.client == "vertexai":
+        if not args.gcp_project_id:
+            logger.error("--gcp_project_id is required when using 'vertexai' client")
+            sys.exit(1)
+        if not args.gcp_application_credentials:
+            logger.error("--gcp_application_credentials is required when using 'vertexai' client")
+            sys.exit(1)
+    
+    elif args.client == "azure":
+        if not args.azure_openai_api_key:
+            logger.error("--azure_openai_api_key is required when using 'azure' client")
+            sys.exit(1)
+        if not args.azure_openai_endpoint:
+            logger.error("--azure_openai_endpoint is required when using 'azure' client")
+            sys.exit(1)
+        if not args.azure_deployment_name:
+            logger.error("--azure_deployment_name is required when using 'azure' client")
+            sys.exit(1)
+    
+    elif args.client == "aws":
+        if not args.aws_access_key_id:
+            logger.error("--aws_access_key_id is required when using 'aws' client")
+            sys.exit(1)
+        if not args.aws_secret_access_key:
+            logger.error("--aws_secret_access_key is required when using 'aws' client")
+            sys.exit(1)
+    
+    # Validate input path exists
+    input_path = Path(args.input_dir)
+    if not input_path.exists():
+        logger.error(f"Input path does not exist: {input_path}")
+        sys.exit(1)
+    
+    # Validate output directory can be created (will be created if needed)
+    output_dir = Path(args.output_dir)
+    try:
+        output_dir.mkdir(parents=True, exist_ok=True)
+    except (OSError, PermissionError) as e:
+        logger.error(f"Cannot create output directory {output_dir}: {e}")
+        sys.exit(1)
+
 
 def main():
     # ---- 1) Parse arguments ----
@@ -170,6 +226,9 @@ def main():
         handlers=[logging.StreamHandler(sys.stdout)]
     )
     logger = logging.getLogger(__name__)
+    
+    # ---- 2.5) Validate arguments ----
+    validate_args(args, logger)
 
     # ---- 3) Read prompt once ----
     if args.prompt_path:
@@ -238,7 +297,7 @@ def main():
 
     input_path = Path(args.input_dir)
     output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    # Output directory already created in validate_args
 
     # ---- 5) Identify local vs. container-based conversion ----
     if args.libreoffice_url:

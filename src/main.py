@@ -38,8 +38,8 @@ def parse_args(input_args=None):
     parser.add_argument(
         "--model",
         type=str,
-        default="gemini-1.5-flash",
-        help="Suggested models: gemini-1.5-flash, gemini-1.5-pro, gpt-4o, claude-3-5-sonnet-latest"
+        default="gemini-2.5-flash",
+        help="Suggested models: gemini-2.5-flash, gemini-2.5-pro, gpt-5, claude-4-5-sonnet-latest"
     )
     parser.add_argument(
         "--instructions",

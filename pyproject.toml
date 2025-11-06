@@ -63,4 +63,16 @@ dependencies = [
     "typing-extensions==4.12.2",
     "uritemplate==4.1.1",
     "urllib3==2.3.0",
+    "pytest==8.3.3",
+    "pytest-mock==3.14.0",
+]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra"
+testpaths = [
+    "tests",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
 ]

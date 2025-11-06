@@ -96,7 +96,7 @@ General Arguments:
 - `--input_dir`: Path to input directory or PPT file (required)
 - `--output_dir`: Output directory path (required)
 - `--client`: LLM client to use: 'gemini', 'vertexai', 'anthropic', 'azure', 'aws' or 'openai' (required)
-- `--model`: Model to use (default: "gemini-1.5-flash")
+- `--model`: Model to use (default: "gemini-2.5-flash")
 - `--instructions`: Additional instructions for the model
 - `--libreoffice_path`: Path to LibreOffice installation
 - `--libreoffice_url`: Url for docker-based libreoffice installation (configured: http://localhost:2002)

@@ -131,7 +131,7 @@ uv run src/main.py \
     --output_dir ./output \
     --libreoffice_path ./soffice \
     --client gemini \
-    --model gemini-1.5-flash \
+    --model gemini-2.5-flash \
     --rate_limit 30 \
     --instructions "Focus on extracting numerical data from charts and graphs"
 ```
@@ -146,7 +146,7 @@ uv run src/main.py \
     --gcp_project_id my-project-123 \
     --gcp_region us-central1 \
     --gcp_application_credentials ./service-account.json \
-    --model gemini-1.5-pro \
+    --model gemini-2.5-pro \
     --instructions "Extract detailed information from technical diagrams"
 ```
 Using Azure AI Foundry:
@@ -207,7 +207,7 @@ uv run src/main.py \
     --output_dir ./output \
     --libreoffice_url http://localhost:2002 \
     --client vertexai \
-    --model gemini-1.5-pro \
+    --model gemini-2.5-pro \
     --gcp_project_id my-project-123 \
     --gcp_region us-central1 \
     --gcp_application_credentials ./service-account.json \

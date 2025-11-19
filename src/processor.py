@@ -10,11 +10,11 @@ from typing import List, Tuple, Union, Optional, Dict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 
-from llm import LLMClient
-from converters.ppt_converter import convert_pptx_to_pdf
-from converters.pdf_converter import convert_pdf_to_images
-from converters.docker_converter import convert_pptx_via_docker
-from schemas.deck import DeckData, SlideData
+from .llm import LLMClient
+from .converters.ppt_converter import convert_pptx_to_pdf
+from .converters.pdf_converter import convert_pdf_to_images
+from .converters.docker_converter import convert_pptx_via_docker
+from .schemas.deck import DeckData, SlideData
 
 # Create a type alias for all possible clients
 logger = logging.getLogger(__name__)

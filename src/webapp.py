@@ -9,13 +9,23 @@ import sys
 from typing import Optional
 import json
 
-from .llm.google_unified import GoogleUnifiedClient
-from .llm.openai import OpenAIClient
-from .llm.anthropic import AnthropicClient
-from .llm.azure import AzureClient
-from .llm.aws import AWSClient
-from .processor import process_input_path
-from .prompt import BASE_PROMPT
+# Support both relative imports (for module) and absolute imports (for direct run)
+try:
+    from .llm.google_unified import GoogleUnifiedClient
+    from .llm.openai import OpenAIClient
+    from .llm.anthropic import AnthropicClient
+    from .llm.azure import AzureClient
+    from .llm.aws import AWSClient
+    from .processor import process_input_path
+    from .prompt import BASE_PROMPT
+except ImportError:
+    from llm.google_unified import GoogleUnifiedClient
+    from llm.openai import OpenAIClient
+    from llm.anthropic import AnthropicClient
+    from llm.azure import AzureClient
+    from llm.aws import AWSClient
+    from processor import process_input_path
+    from prompt import BASE_PROMPT
 
 logging.basicConfig(
     level=logging.INFO,

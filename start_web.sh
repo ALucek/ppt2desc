@@ -6,10 +6,23 @@
 echo "🚀 Starting PPT2Desc Web Application..."
 echo ""
 
+# Parse arguments
+REBUILD=false
+if [ "$1" = "--rebuild" ]; then
+    REBUILD=true
+fi
+
 # Check if Docker is available
 if command -v docker &> /dev/null && command -v docker compose &> /dev/null; then
     echo "✓ Docker found"
     echo ""
+
+    if [ "$REBUILD" = true ]; then
+        echo "Rebuilding containers..."
+        docker compose down
+        docker compose build --no-cache
+    fi
+
     echo "Starting services with Docker Compose..."
     echo ""
 
@@ -24,8 +37,14 @@ if command -v docker &> /dev/null && command -v docker compose &> /dev/null; the
         echo ""
         echo "To view logs: docker compose logs -f"
         echo "To stop: docker compose down"
+        echo ""
+        echo "Waiting for services to be healthy..."
+        sleep 3
+        docker compose ps
     else
         echo "❌ Failed to start services"
+        echo ""
+        echo "💡 Try rebuilding with: ./start_web.sh --rebuild"
         exit 1
     fi
 else
@@ -58,5 +77,6 @@ else
     echo "      run 'docker compose up -d libreoffice-converter' separately"
     echo ""
 
-    uv run uvicorn src.webapp:app --host 0.0.0.0 --port 8000
+    export PYTHONPATH="${PYTHONPATH}:$(pwd)"
+    uv run python -m uvicorn src.webapp:app --host 0.0.0.0 --port 8000
 fi

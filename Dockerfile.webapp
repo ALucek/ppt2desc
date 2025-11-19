@@ -10,18 +10,21 @@ RUN apt-get update && \
 # Set working directory
 WORKDIR /app
 
-# Copy project files
-COPY pyproject.toml uv.lock ./
-COPY src/ ./src/
-
-# Install UV
+# Install UV first
 RUN pip install --no-cache-dir uv
 
-# Install dependencies
-RUN uv sync --frozen
+# Copy project files
+COPY pyproject.toml ./
+COPY src/ ./src/
+
+# Install dependencies (without frozen lock to allow updates)
+RUN uv sync
+
+# Set Python path
+ENV PYTHONPATH=/app
 
 # Expose port
 EXPOSE 8000
 
 # Run the web application
-CMD ["uv", "run", "uvicorn", "src.webapp:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "python", "-m", "uvicorn", "src.webapp:app", "--host", "0.0.0.0", "--port", "8000"]

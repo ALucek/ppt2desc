@@ -18,7 +18,7 @@ services:
       context: .
       dockerfile: Dockerfile.webapp
     ports:
-      - "8000:8000"
+      - "5001:8000"
     restart: unless-stopped
     depends_on:
       - libreoffice-converter

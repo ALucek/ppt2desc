@@ -32,7 +32,7 @@ if command -v docker &> /dev/null && command -v docker compose &> /dev/null; the
         echo ""
         echo "✅ Services started successfully!"
         echo ""
-        echo "🌐 Web Interface: http://localhost:8000"
+        echo "🌐 Web Interface: http://localhost:5001"
         echo "🔧 LibreOffice Converter: http://localhost:2002"
         echo ""
         echo "To view logs: docker compose logs -f"
@@ -71,12 +71,12 @@ else
     echo ""
     echo "✅ Server starting..."
     echo ""
-    echo "🌐 Web Interface: http://localhost:8000"
+    echo "🌐 Web Interface: http://localhost:5001"
     echo ""
     echo "Note: For local mode, make sure LibreOffice is installed or"
     echo "      run 'docker compose up -d libreoffice-converter' separately"
     echo ""
 
     export PYTHONPATH="${PYTHONPATH}:$(pwd)"
-    uv run python -m uvicorn src.webapp:app --host 0.0.0.0 --port 8000
+    uv run python -m uvicorn src.webapp:app --host 0.0.0.0 --port 5001
 fi

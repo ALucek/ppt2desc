@@ -14,14 +14,14 @@ This is the easiest way to get started. Both LibreOffice converter and the web a
    ```
 
 2. **Access the web interface:**
-   - Open your browser and navigate to: **http://localhost:8000**
+   - Open your browser and navigate to: **http://localhost:5001**
 
 3. **Stop the services:**
    ```bash
    docker compose down
    ```
 
-That's it! The web interface will be available at http://localhost:8000, and you can upload PowerPoint files directly through your browser.
+That's it! The web interface will be available at http://localhost:5001, and you can upload PowerPoint files directly through your browser.
 
 ### Option 2: Running Locally with UV
 
@@ -39,11 +39,11 @@ If you prefer to run the application directly on your machine without Docker:
 
 3. **Run the web application:**
    ```bash
-   uv run uvicorn src.webapp:app --host 0.0.0.0 --port 8000
+   uv run uvicorn src.webapp:app --host 0.0.0.0 --port 5001
    ```
 
 4. **Access the web interface:**
-   - Open your browser and navigate to: **http://localhost:8000**
+   - Open your browser and navigate to: **http://localhost:5001**
 
 ## Using the Web Interface
 
@@ -56,6 +56,8 @@ Once the application is running, you can:
 5. **Click "Convert Presentation"** to process your file
 
 The results will be displayed directly in the browser, showing detailed descriptions for each slide.
+
+The web service runs on **port 5001** by default.
 
 ## Configuration Options
 
@@ -82,12 +84,12 @@ If you want to integrate the service programmatically:
 
 ### Health Check
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:5001/health
 ```
 
 ### Convert Presentation
 ```bash
-curl -X POST http://localhost:8000/convert \
+curl -X POST http://localhost:5001/convert \
   -F "file=@presentation.pptx" \
   -F "client=gemini" \
   -F "api_key=YOUR_API_KEY" \
@@ -98,18 +100,18 @@ curl -X POST http://localhost:8000/convert \
 
 ### Port Already in Use
 
-If port 8000 is already in use, you can change it:
+If port 5001 is already in use, you can change it:
 
 **Docker Compose:**
 Edit `docker-compose.yml` and change the port mapping:
 ```yaml
 ports:
-  - "8080:8000"  # Change 8080 to any available port
+  - "5002:8000"  # Change 5002 to any available port
 ```
 
 **Local Running:**
 ```bash
-uv run uvicorn src.webapp:app --host 0.0.0.0 --port 8080
+uv run uvicorn src.webapp:app --host 0.0.0.0 --port 5002
 ```
 
 ### LibreOffice Connection Issues
@@ -142,7 +144,7 @@ For large presentations or high rate limits, you may need to increase Docker mem
 To run in development mode with auto-reload:
 
 ```bash
-uv run uvicorn src.webapp:app --host 0.0.0.0 --port 8000 --reload
+uv run uvicorn src.webapp:app --host 0.0.0.0 --port 5001 --reload
 ```
 
 ## Environment Variables

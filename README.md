@@ -93,7 +93,7 @@ The easiest way to use ppt2desc is through the web interface:
 
 2. **Open your browser and navigate to:**
    ```
-   http://localhost:8000
+   http://localhost:5001
    ```
 
 3. **Upload your PowerPoint file, configure your AI provider, and convert!**

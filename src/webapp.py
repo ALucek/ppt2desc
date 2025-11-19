@@ -655,14 +655,14 @@ async def convert_presentation(
         if len(slides) == 0:
             raise HTTPException(status_code=500, detail="Processing failed - no slides extracted")
 
-        # Format response
+        # Format response - ensure all values are JSON serializable
         response_data = {
-            "deck": file.filename,
-            "model": model,
+            "deck": str(file.filename),
+            "model": str(model),
             "slides": [
                 {
                     "number": i + 1,
-                    "content": slide
+                    "content": str(slide)
                 }
                 for i, slide in enumerate(slides)
             ]

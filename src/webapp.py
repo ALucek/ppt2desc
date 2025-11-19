@@ -462,10 +462,35 @@ HTML_TEMPLATE = """
             }
         });
 
+        let currentJsonData = null;
+
+        function downloadJSON() {
+            if (!currentJsonData) return;
+
+            const dataStr = JSON.stringify(currentJsonData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${currentJsonData.deck.replace(/\.[^/.]+$/, '')}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
         function displayResults(data) {
+            currentJsonData = data;
             const resultDiv = document.getElementById('result');
 
-            let html = `<h3>Results for: ${data.deck}</h3>`;
+            let html = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0;">Results for: ${data.deck}</h3>
+                    <button onclick="downloadJSON()" style="width: auto; padding: 10px 20px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                        📥 Download JSON
+                    </button>
+                </div>
+            `;
             html += `<p><strong>Model:</strong> ${data.model}</p>`;
             html += `<p><strong>Total Slides:</strong> ${data.slides.length}</p>`;
 

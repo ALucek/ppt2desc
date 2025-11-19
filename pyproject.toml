@@ -15,6 +15,7 @@ dependencies = [
     "charset-normalizer==3.4.1",
     "distro==1.9.0",
     "docstring-parser==0.16",
+    "fastapi>=0.115.0",
     "google-ai-generativelanguage==0.6.10",
     "google-api-core==2.24.0",
     "google-api-python-client==2.156.0",
@@ -53,6 +54,7 @@ dependencies = [
     "pymupdf==1.25.1",
     "pyparsing==3.2.1",
     "python-dateutil==2.9.0.post0",
+    "python-multipart>=0.0.12",
     "requests==2.32.3",
     "rsa==4.9",
     "s3transfer==0.10.4",
@@ -63,6 +65,7 @@ dependencies = [
     "typing-extensions==4.12.2",
     "uritemplate==4.1.1",
     "urllib3==2.3.0",
+    "uvicorn>=0.32.0",
     "pytest==8.3.3",
     "pytest-mock==3.14.0",
 ]

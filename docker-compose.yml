@@ -1,6 +1,6 @@
 services:
   libreoffice-converter:
-    build: 
+    build:
       context: ./src/libreoffice_docker
       dockerfile: Dockerfile
     ports:
@@ -10,5 +10,22 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:2002/health"]
       interval: 300s
+      timeout: 10s
+      retries: 3
+
+  ppt2desc-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.webapp
+    ports:
+      - "5001:8000"
+    restart: unless-stopped
+    depends_on:
+      - libreoffice-converter
+    environment:
+      - LIBREOFFICE_URL=http://libreoffice-converter:2002
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
       timeout: 10s
       retries: 3

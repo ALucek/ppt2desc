@@ -10,6 +10,8 @@ ppt2desc is a command-line tool that converts PowerPoint presentations into deta
 
 ## Features
 
+- **Web Interface**: Easy-to-use browser-based interface for converting presentations
+- **CLI Tool**: Command-line interface for batch processing and automation
 - Convert PPT/PPTX files to semantic descriptions
 - Process individual files or entire directories
 - Support for visual elements interpretation (charts, graphs, figures)
@@ -79,6 +81,26 @@ uv sync
 This will create a virtual environment and install all dependencies from `pyproject.toml`.
 
 ## Usage
+
+### Web Interface (Recommended for Quick Start)
+
+The easiest way to use ppt2desc is through the web interface:
+
+1. **Start the web application:**
+   ```bash
+   docker compose up -d
+   ```
+
+2. **Open your browser and navigate to:**
+   ```
+   http://localhost:5001
+   ```
+
+3. **Upload your PowerPoint file, configure your AI provider, and convert!**
+
+For detailed instructions, see [LOCALHOST_GUIDE.md](LOCALHOST_GUIDE.md).
+
+### Command Line Interface
 
 Basic usage with Gemini API:
 ```bash

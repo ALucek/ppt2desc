@@ -1,0 +1,30 @@
+FROM python:3.13-slim
+
+# Install LibreOffice for local conversion (optional, can use the separate container)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    libreoffice \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Install UV first
+RUN pip install --no-cache-dir uv
+
+# Copy project files
+COPY pyproject.toml ./
+COPY src/ ./src/
+
+# Install dependencies (without frozen lock to allow updates)
+RUN uv sync
+
+# Set Python path
+ENV PYTHONPATH=/app
+
+# Expose port
+EXPOSE 8000
+
+# Run the web application
+CMD ["uv", "run", "python", "-m", "uvicorn", "src.webapp:app", "--host", "0.0.0.0", "--port", "8000"]

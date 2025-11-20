@@ -359,8 +359,8 @@ HTML_TEMPLATE = """
 
             <div class="form-group">
                 <label for="libreoffice_url">LibreOffice URL (Optional)</label>
-                <input type="text" id="libreoffice_url" name="libreoffice_url" value="http://libreoffice-converter:2002" placeholder="http://localhost:2002">
-                <small>Use Docker-based LibreOffice converter. Leave blank to use local installation.</small>
+                <input type="text" id="libreoffice_url" name="libreoffice_url" placeholder="http://localhost:2002">
+                <small>Use Docker-based LibreOffice converter at http://localhost:2002. Leave blank to use local LibreOffice installation.</small>
             </div>
 
             <div class="form-group">
